@@ -1,4 +1,4 @@
-QBCore = exports['qb-core']:GetCoreObject()
+QBCore = exports['qbr-core']:GetCoreObject()
 
 QBCore.Functions.CreateUseableItem("joint", function(source, item)
     local Player = QBCore.Functions.GetPlayer(source)
