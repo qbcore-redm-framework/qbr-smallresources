@@ -13,6 +13,11 @@ Citizen.CreateThread(function()
     end
 end)
 
+function loadAnimDict(dict, anim)
+    while not HasAnimDictLoaded(dict) do Wait(0) RequestAnimDict(dict) end
+    return dict
+end
+
 RegisterNetEvent("consumables:client:UseJoint")
 AddEventHandler("consumables:client:UseJoint", function()
     QBCore.Functions.Progressbar("smoke_joint", "Lighting joint..", 1500, false, true, {
@@ -32,23 +37,16 @@ AddEventHandler("consumables:client:UseJoint", function()
     end)
 end)
 
-function loadAnimDict(dict)
-    while (not HasAnimDictLoaded(dict)) do
-        RequestAnimDict(dict)
-        Citizen.Wait(5)
-    end
-end
-
 RegisterNetEvent("consumables:client:DrinkAlcohol")
 AddEventHandler("consumables:client:DrinkAlcohol", function(itemName)
-    --TriggerEvent('animations:client:EmoteCommandStart', {"drink"})
+    local dict = loadAnimDict('mech_inventory@drinking@coffee')
+    TaskPlayAnim(PlayerPedId(), dict, 'action', 5.0, 5.0, -1, 1, false, false, false)
     QBCore.Functions.Progressbar("snort_coke", "Drinking liquor..", math.random(3000, 6000), false, true, {
         disableMovement = false,
         disableCarMovement = false,
         disableMouse = false,
         disableCombat = true,
     }, {}, {}, {}, function() -- Done
-        --TriggerEvent('animations:client:EmoteCommandStart', {"c"})
         TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
         TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
         TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + Consumeables[itemName])
@@ -59,10 +57,10 @@ AddEventHandler("consumables:client:DrinkAlcohol", function(itemName)
             TriggerEvent("evidence:client:SetStatus", "heavyalcohol", 200)
         end
 
-    end, function() -- Cancel
-        --TriggerEvent('animations:client:EmoteCommandStart', {"c"})
+    end, function() 
         QBCore.Functions.Notify("Cancelled..", "error")
     end)
+    ClearPedTasks(PlayerPedId())
 end)
 
 RegisterNetEvent("consumables:client:Cokebaggy")
@@ -74,9 +72,6 @@ AddEventHandler("consumables:client:Cokebaggy", function()
         disableMouse = false,
         disableCombat = true,
     }, {
-        --animDict = "switch@trevor@trev_smoking_meth",
-        --anim = "trev_smoking_meth_loop",
-        --flags = 49,
     }, {}, {}, function() -- Done
         --StopAnimTask(ped, "switch@trevor@trev_smoking_meth", "trev_smoking_meth_loop", 1.0)
         TriggerServerEvent("QBCore:Server:RemoveItem", "cokebaggy", 1)
@@ -137,7 +132,8 @@ end)
 
 RegisterNetEvent("consumables:client:Eat")
 AddEventHandler("consumables:client:Eat", function(itemName)
-    --TriggerEvent('animations:client:EmoteCommandStart', {"eat"})
+    local dict = loadAnimDict('mech_inventory@eating@multi_bite@wedge_a4-2_b0-75_w8_h9-4_eat_cheese')
+    TaskPlayAnim(PlayerPedId(), dict, 'quick_right_hand', 5.0, 5.0, -1, 1, false, false, false)    
     QBCore.Functions.Progressbar("eat_something", "Eating..", 5000, false, true, {
         disableMovement = false,
         disableCarMovement = false,
@@ -145,15 +141,16 @@ AddEventHandler("consumables:client:Eat", function(itemName)
 		disableCombat = true,
     }, {}, {}, {}, function() -- Done
         TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-        --TriggerEvent('animations:client:EmoteCommandStart', {"c"})
         TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + Consumeables[itemName])
         TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
     end)
+    ClearPedTasks(PlayerPedId())
 end)
 
 RegisterNetEvent("consumables:client:Drink")
 AddEventHandler("consumables:client:Drink", function(itemName)
-    --TriggerEvent('animations:client:EmoteCommandStart', {"drink"})
+    local dict = loadAnimDict('mech_inventory@drinking@coffee')
+    TaskPlayAnim(PlayerPedId(), dict, 'action', 5.0, 5.0, -1, 1, false, false, false)
     QBCore.Functions.Progressbar("drink_something", "Drinking..", 5000, false, true, {
         disableMovement = false,
         disableCarMovement = false,
@@ -164,6 +161,7 @@ AddEventHandler("consumables:client:Drink", function(itemName)
         --TriggerEvent('animations:client:EmoteCommandStart', {"c"})
         TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + Consumeables[itemName])
     end)
+    ClearPedTasks(PlayerPedId())
 end)
 
 function EcstasyEffect()
