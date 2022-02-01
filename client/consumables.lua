@@ -130,6 +130,8 @@ RegisterNetEvent("consumables:client:UseJoint", function()
 end)
 
 RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
+    SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
+    Citizen.Wait(100)
     local dict = loadAnimDict('mech_inventory@drinking@coffee')
     TaskPlayAnim(PlayerPedId(), dict, 'action', 5.0, 5.0, -1, 1, false, false, false)
     QBCore.Functions.Progressbar("snort_coke", "Drinking liquor..", math.random(3000, 6000), false, true, {
@@ -219,6 +221,8 @@ RegisterNetEvent('consumables:client:EcstasyBaggy', function()
 end)
 
 RegisterNetEvent("consumables:client:Eat", function(itemName)
+    SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
+    Citizen.Wait(100)
     local dict = loadAnimDict('mech_inventory@eating@multi_bite@wedge_a4-2_b0-75_w8_h9-4_eat_cheese')
     TaskPlayAnim(PlayerPedId(), dict, 'quick_right_hand', 5.0, 5.0, -1, 1, false, false, false)    
     QBCore.Functions.Progressbar("eat_something", "Eating..", 5000, false, true, {
@@ -235,6 +239,8 @@ RegisterNetEvent("consumables:client:Eat", function(itemName)
 end)
 
 RegisterNetEvent("consumables:client:Drink", function(itemName)
+    SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
+    Citizen.Wait(100)
     local dict = loadAnimDict('mech_inventory@drinking@coffee')
     TaskPlayAnim(PlayerPedId(), dict, 'action', 5.0, 5.0, -1, 1, false, false, false)
     QBCore.Functions.Progressbar("drink_something", "Drinking..", 5000, false, true, {
