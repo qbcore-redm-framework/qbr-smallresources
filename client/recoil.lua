@@ -61,7 +61,7 @@ local recoils = {
 Citizen.CreateThread(function()
 	while true do
 		local ped = PlayerPedId()
-		if IsPedShooting(ped) and not IsPedDoingDriveby(ped) then
+		if IsPedShooting(ped) then --and not IsPedDoingDriveby(ped) then
 			local _,wep = GetCurrentPedWeapon(ped)
 			if recoils[wep] and recoils[wep] ~= 0 then
 				tv = 0
