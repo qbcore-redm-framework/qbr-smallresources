@@ -1,276 +1,159 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-local alcoholCount = 0
-local onWeed = false
+local QBCore = exports['qbr-core']:GetCoreObject()
+local isBusy = false
 
-local function loadAnimDict(dict, anim)
+function loadAnimDict(dict, anim)
     while not HasAnimDictLoaded(dict) do Wait(0) RequestAnimDict(dict) end
     return dict
 end
 
-local function EcstasyEffect()
-    local startStamina = 30
-    SetFlash(0, 0, 500, 7000, 500)
-    while startStamina > 0 do
-        Citizen.Wait(1000)
-        startStamina = startStamina - 1
-        RestorePlayerStamina(PlayerId(), 1.0)
-        if math.random(1, 100) < 51 then
-            SetFlash(0, 0, 500, 7000, 500)
-            ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', 0.08)
-        end
-    end
-    if IsPedRunning(PlayerPedId()) then
-        SetPedToRagdoll(PlayerPedId(), math.random(1000, 3000), math.random(1000, 3000), 3, 0, 0, 0)
-    end
-
-    startStamina = 0
+function loadModel(model)
+    while not HasModelLoaded(model) do Wait(0) RequestModel(model) end
+    return model
 end
 
-local function JointEffect()
-    -- if not onWeed then
-    --     local RelieveOdd = math.random(35, 45)
-    --     onWeed = true
-    --     local weedTime = Config.JointEffectTime
-    --     Citizen.CreateThread(function()
-    --         while onWeed do 
-    --             SetPlayerHealthRechargeMultiplier(PlayerId(), 1.8)
-    --             Citizen.Wait(1000)
-    --             weedTime = weedTime - 1
-    --             if weedTime == RelieveOdd then
-    --                 TriggerServerEvent('hud:Server:RelieveStress', math.random(14, 18))
-    --             end
-    --             if weedTime <= 0 then
-    --                 onWeed = false
-    --             end
-    --         end
-    --     end)
-    -- end
+function doAnim (Amodel, bone, pX, pY, pZ, rX, rY, rZ, anim, Adict, duration)
+    local model = loadModel(GetHashKey(Amodel))
+    object = CreateObject(model, GetEntityCoords(PlayerPedId()), true, false, false)
+    AttachEntityToEntity(object, PlayerPedId(), GetEntityBoneIndexByName(PlayerPedId(), bone), pX, pY, pZ, rX, rY, rZ, false, true, true, true, 0, true)
+    local dict = loadAnimDict(Adict)
+    TaskPlayAnim(PlayerPedId(), dict, anim, 5.0, 5.0, duration, 1, false, false, false)
 end
 
-local function CrackBaggyEffect()
-    local startStamina = 8
-    local ped = PlayerPedId()
-    AlienEffect()
-    SetRunSprintMultiplierForPlayer(PlayerId(), 1.3)
-    while startStamina > 0 do 
-        Citizen.Wait(1000)
-        if math.random(1, 100) < 10 then
-            RestorePlayerStamina(PlayerId(), 1.0)
-        end
-        startStamina = startStamina - 1
-        if math.random(1, 100) < 60 and IsPedRunning(ped) then
-            SetPedToRagdoll(ped, math.random(1000, 2000), math.random(1000, 2000), 3, 0, 0, 0)
-        end
-        if math.random(1, 100) < 51 then
-            AlienEffect()
-        end
+function AnimDetatch (sleep)
+    Citizen.Wait(sleep)
+    if object ~= nil then
+        DetachEntity(object, true, true)
+        DeleteObject(object)
     end
-    if IsPedRunning(ped) then
-        SetPedToRagdoll(ped, math.random(1000, 3000), math.random(1000, 3000), 3, 0, 0, 0)
-    end
-
-    startStamina = 0
-    SetRunSprintMultiplierForPlayer(PlayerId(), 1.0)
 end
 
-local function CokeBaggyEffect()
-    local startStamina = 20
-    local ped = PlayerPedId()
-    AlienEffect()
-    SetRunSprintMultiplierForPlayer(PlayerId(), 1.1)
-    while startStamina > 0 do
-        Citizen.Wait(1000)
-        if math.random(1, 100) < 20 then
-            RestorePlayerStamina(PlayerId(), 1.0)
+RegisterNetEvent("consumables:client:Drink", function(itemName)
+    if isBusy then
+        return
+    else        
+        isBusy = not isBusy
+        local sleep = 5000   
+        SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
+        Citizen.Wait(100)
+        if not IsPedOnMount(PlayerPedId()) and not IsPedInAnyVehicle(PlayerPedId()) then
+            local object = nil            
+            doAnim("p_mugcoffee01x", "SKEL_R_FINGER12", 0.0, -0.05, 0.03, 0.0, 180.0, 180.0, 'action', 'mech_inventory@drinking@coffee', sleep)
         end
-        startStamina = startStamina - 1
-        if math.random(1, 100) < 10 and IsPedRunning(ped) then
-            SetPedToRagdoll(ped, math.random(1000, 3000), math.random(1000, 3000), 3, 0, 0, 0)
-        end
-        if math.random(1, 300) < 10 then
-            AlienEffect()
-            Citizen.Wait(math.random(3000, 6000))
-        end
+        QBCore.Functions.Progressbar("drink_something", "Drinking..", sleep, false, true, {
+            disableMovement = false,
+            disableCarMovement = false,
+            disableMouse = false,
+            disableCombat = true,
+        }, {}, {}, {}, function() -- Done
+            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + Consumeables[itemName])
+        end)            
+        ClearPedTasks(PlayerPedId())
+        AnimDetatch (sleep)
+        isBusy = not isBusy        
     end
-    if IsPedRunning(ped) then
-        SetPedToRagdoll(ped, math.random(1000, 3000), math.random(1000, 3000), 3, 0, 0, 0)
+end)
+
+RegisterNetEvent("consumables:client:Smoke", function(itemName)
+    if isBusy then
+        return
+    else
+        isBusy = not isBusy
+        local sleep = 10000
+        SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
+        Citizen.Wait(100)
+        local cigar = nil
+        if not IsPedOnMount(PlayerPedId()) and not IsPedInAnyVehicle(PlayerPedId()) then
+            local item_model = nil
+            local pX, pY, pZ, rX, rY, rZ = nil, nil, nil, nil, nil, nil
+            if itemName == "cigar" then
+                sleep = 20000
+                item_model = "p_cigar01x"
+                pX, pY, pZ, rX, rY, rZ = 0.0, 0.03, 0.0, 0.0, 00.0, 0.0
+            else
+                item_model = "p_cigarette_cs01x"
+                pX, pY, pZ, rX, rY, rZ = 0.0, 0.03, 0.01, 0.0, 180.0, 90.0
+            end            
+            doAnim(item_model, "SKEL_R_FINGER12", pX, pY, pZ, rX, rY, rZ, 'base', 'amb_wander@code_human_smoking_wander@cigar@male_a@base', sleep)
+        end
+        QBCore.Functions.Progressbar("smoking", "Smoking..", sleep, false, true, {
+            disableMovement = false,
+            disableCarMovement = false,
+            disableMouse = false,
+            disableCombat = true,
+        }, {}, {}, {}, function() -- Done
+            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerServerEvent('hud:server:RelieveStress', math.random(20, 40))
+        end)        
+        ClearPedTasks(PlayerPedId())
+        AnimDetatch (sleep)
+        isBusy = not isBusy
     end
-
-    startStamina = 0
-    SetRunSprintMultiplierForPlayer(PlayerId(), 1.0)
-end
-
-local function AlienEffect()
-    StartScreenEffect("DrugsMichaelAliensFightIn", 3.0, 0)
-    Citizen.Wait(math.random(5000, 8000))
-    StartScreenEffect("DrugsMichaelAliensFight", 3.0, 0)
-    Citizen.Wait(math.random(5000, 8000))    
-    StartScreenEffect("DrugsMichaelAliensFightOut", 3.0, 0)
-    StopScreenEffect("DrugsMichaelAliensFightIn")
-    StopScreenEffect("DrugsMichaelAliensFight")
-    StopScreenEffect("DrugsMichaelAliensFightOut")
-end
-
-RegisterNetEvent("consumables:client:UseJoint", function()
-    QBCore.Functions.Progressbar("smoke_joint", "Lighting joint..", 1500, false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-		disableMouse = false,
-		disableCombat = true,
-    }, {}, {}, {}, function() -- Done
-        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["joint"], "remove")
-        --[[if IsPedInAnyVehicle(PlayerPedId(), false) then
-            TriggerEvent('animations:client:EmoteCommandStart', {"smoke3"})
-        else
-            TriggerEvent('animations:client:EmoteCommandStart', {"smokeweed"})
-        end]]
-        TriggerEvent("evidence:client:SetStatus", "weedsmell", 300)
-        --TriggerEvent('animations:client:SmokeWeed')
-    end)
 end)
 
 RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
-    SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
-    Citizen.Wait(100)
-    local dict = loadAnimDict('mech_inventory@drinking@coffee')
-    TaskPlayAnim(PlayerPedId(), dict, 'action', 5.0, 5.0, -1, 1, false, false, false)
-    QBCore.Functions.Progressbar("snort_coke", "Drinking liquor..", math.random(3000, 6000), false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-        disableMouse = false,
-        disableCombat = true,
-    }, {}, {}, {}, function() -- Done
-        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-        TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
-        TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + ConsumeablesAlcohol[itemName])
-        alcoholCount = alcoholCount + 1
-        if alcoholCount > 1 and alcoholCount < 4 then
-            TriggerEvent("evidence:client:SetStatus", "alcohol", 200)
-        elseif alcoholCount >= 4 then
-            TriggerEvent("evidence:client:SetStatus", "heavyalcohol", 200)
+    if isBusy then
+        return
+    else
+        isBusy = not isBusy
+        sleep = 5000
+        SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
+        Citizen.Wait(100)
+        local bottle = nil
+        if not IsPedOnMount(PlayerPedId()) and not IsPedInAnyVehicle(PlayerPedId()) then
+            doAnim("s_inv_whiskey01x", "SKEL_R_FINGER12", 0.0, -0.05, 0.22, 0.0, 180.0, 180.0, 'base_trans_cheers_putaway', 'mp_mech_inventory@drinking@moonshine@drunk@male_a', sleep)
         end
-
-    end, function() 
-        QBCore.Functions.Notify("Cancelled..", "error")
-    end)
-    ClearPedTasks(PlayerPedId())
-end)
-
-RegisterNetEvent("consumables:client:Cokebaggy", function()
-    local ped = PlayerPedId()
-    QBCore.Functions.Progressbar("snort_coke", "Quick sniff..", math.random(5000, 8000), false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-        disableMouse = false,
-        disableCombat = true,
-    }, {
-    }, {}, {}, function() -- Done
-        --StopAnimTask(ped, "switch@trevor@trev_smoking_meth", "trev_smoking_meth_loop", 1.0)
-        TriggerServerEvent("QBCore:Server:RemoveItem", "cokebaggy", 1)
-        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["cokebaggy"], "remove")
-        TriggerEvent("evidence:client:SetStatus", "widepupils", 200)
-        --CokeBaggyEffect()
-    end, function() -- Cancel
-        --StopAnimTask(ped, "switch@trevor@trev_smoking_meth", "trev_smoking_meth_loop", 1.0)
-        QBCore.Functions.Notify("Canceled..", "error")
-    end)
-end)
-
-RegisterNetEvent("consumables:client:Crackbaggy", function()
-    local ped = PlayerPedId()
-    QBCore.Functions.Progressbar("snort_coke", "Smoking crack..", math.random(7000, 10000), false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-        disableMouse = false,
-        disableCombat = true,
-    }, {
-        --animDict = "switch@trevor@trev_smoking_meth",
-        --anim = "trev_smoking_meth_loop",
-        --flags = 49,
-    }, {}, {}, function() -- Done
-        --StopAnimTask(ped, "switch@trevor@trev_smoking_meth", "trev_smoking_meth_loop", 1.0)
-        TriggerServerEvent("QBCore:Server:RemoveItem", "crack_baggy", 1)
-        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["crack_baggy"], "remove")
-        TriggerEvent("evidence:client:SetStatus", "widepupils", 300)
-        --CrackBaggyEffect()
-    end, function() -- Cancel
-        --StopAnimTask(ped, "switch@trevor@trev_smoking_meth", "trev_smoking_meth_loop", 1.0)
-        QBCore.Functions.Notify("Canceled..", "error")
-    end)
-end)
-
-RegisterNetEvent('consumables:client:EcstasyBaggy', function()
-    QBCore.Functions.Progressbar("use_ecstasy", "Pops Pills", 3000, false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-		disableMouse = false,
-		disableCombat = true,
-    }, {
-		--animDict = "mp_suicide",
-		--anim = "pill",
-		--flags = 49,
-    }, {}, {}, function() -- Done
-        --StopAnimTask(PlayerPedId(), "mp_suicide", "pill", 1.0)
-        TriggerServerEvent("QBCore:Server:RemoveItem", "xtcbaggy", 1)
-        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items["xtcbaggy"], "remove")
-        --EcstasyEffect()
-    end, function() -- Cancel
-        --StopAnimTask(PlayerPedId(), "mp_suicide", "pill", 1.0)
-        QBCore.Functions.Notify("Failed", "error")
-    end)
+        QBCore.Functions.Progressbar("drink_alcohol", "Drinking liquor..", math.random(3000, 6000), false, true, {
+            disableMovement = false,
+            disableCarMovement = false,
+            disableMouse = false,
+            disableCombat = true,
+        }, {}, {}, {}, function() -- Done
+            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
+            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + Consumeables[itemName])
+        end, function() 
+            QBCore.Functions.Notify("Cancelled..", "error")
+        end)
+        Citizen.Wait(sleep)
+        if bottle ~= nil then
+            DetachEntity(bottle, true, true)
+            DeleteObject(bottle)
+        end
+        ClearPedTasks(PlayerPedId())
+        AnimDetatch (sleep)
+        isBusy = not isBusy
+    end
 end)
 
 RegisterNetEvent("consumables:client:Eat", function(itemName)
-    SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
-    Citizen.Wait(100)
-    local dict = loadAnimDict('mech_inventory@eating@multi_bite@wedge_a4-2_b0-75_w8_h9-4_eat_cheese')
-    TaskPlayAnim(PlayerPedId(), dict, 'quick_right_hand', 5.0, 5.0, -1, 1, false, false, false)    
-    QBCore.Functions.Progressbar("eat_something", "Eating..", 5000, false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-		disableMouse = false,
-		disableCombat = true,
-    }, {}, {}, {}, function() -- Done
-        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-        TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + ConsumeablesEat[itemName])
-        TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
-    end)
-    ClearPedTasks(PlayerPedId())
-end)
-
-RegisterNetEvent("consumables:client:Drink", function(itemName)
-    SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
-    Citizen.Wait(100)
-    local dict = loadAnimDict('mech_inventory@drinking@coffee')
-    TaskPlayAnim(PlayerPedId(), dict, 'action', 5.0, 5.0, -1, 1, false, false, false)
-    QBCore.Functions.Progressbar("drink_something", "Drinking..", 5000, false, true, {
-        disableMovement = false,
-        disableCarMovement = false,
-		disableMouse = false,
-		disableCombat = true,
-    }, {}, {}, {}, function() -- Done
-        TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-        --TriggerEvent('animations:client:EmoteCommandStart', {"c"})
-        TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + ConsumeablesDrink[itemName])
-    end)
-    ClearPedTasks(PlayerPedId())
+    if isBusy then
+        return
+    else
+        isBusy = not isBusy
+        SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
+        Citizen.Wait(100)
+        if not IsPedOnMount(PlayerPedId()) and not IsPedInAnyVehicle(PlayerPedId()) then
+            local dict = loadAnimDict('mech_inventory@eating@multi_bite@wedge_a4-2_b0-75_w8_h9-4_eat_cheese')
+            TaskPlayAnim(PlayerPedId(), dict, 'quick_right_hand', 5.0, 5.0, -1, 1, false, false, false)    
+        end
+        QBCore.Functions.Progressbar("eat_something", "Eating..", 5000, false, true, {
+            disableMovement = false,
+            disableCarMovement = false,
+            disableMouse = false,
+            disableCombat = true,
+        }, {}, {}, {}, function() -- Done
+            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + Consumeables[itemName])
+            TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
+        end)
+        ClearPedTasks(PlayerPedId())
+        isBusy = not isBusy
+    end   
 end)
 
 RegisterNetEvent("qb:Dual", function()
     local player = PlayerPedId()
-	Citizen.InvokeNative(0xB282DC6EBD803C75, player, `weapon_revolver_cattleman`, 500, true, 0)
-	Citizen.InvokeNative(0x5E3BDDBCB83F3D84, player, `weapon_pistol_volcanic`, 500, true, 0, true, 1.0)
-end)
-
-
-CreateThread(function()
-    while true do
-        Wait(10)
-        if alcoholCount > 0 then
-            Wait(1000 * 60 * 15)
-            alcoholCount = alcoholCount - 1
-        else
-            Wait(2000)
-        end
-    end
+	Citizen.InvokeNative(0xB282DC6EBD803C75, player, GetHashKey("weapon_revolver_cattleman"), 500, true, 0)
+	Citizen.InvokeNative(0x5E3BDDBCB83F3D84, player, GetHashKey("weapon_pistol_volcanic"), 500, true, 0, true, 1.0)
 end)
