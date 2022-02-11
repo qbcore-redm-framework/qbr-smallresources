@@ -46,7 +46,7 @@ RegisterNetEvent("consumables:client:Drink", function(itemName)
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
             TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + Consumeables[itemName])
+            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + ConsumeablesDrink[itemName])
         end)            
         ClearPedTasks(PlayerPedId())
         AnimDetatch (sleep)
@@ -111,7 +111,7 @@ RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
         }, {}, {}, {}, function() -- Done
             TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
             TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
-            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + Consumeables[itemName])
+            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + ConsumeablesAlcohol[itemName])
         end, function() 
             QBCore.Functions.Notify("Cancelled..", "error")
         end)
@@ -144,7 +144,7 @@ RegisterNetEvent("consumables:client:Eat", function(itemName)
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
             TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-            TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + Consumeables[itemName])
+            TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + ConsumeablesEat[itemName])
             TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
         end)
         ClearPedTasks(PlayerPedId())
