@@ -4,7 +4,7 @@ end)
 
 exports['qbr-core']:CreateCallback('smallresources:server:GetCurrentPlayers', function(source, cb)
     local TotalPlayers = 0
-    for k, v in pairs(exports['qbr-core']:GetPlayers()) do
+    for k, v in pairs(exports['qbr-core']:GetQBPlayers()) do
         TotalPlayers = TotalPlayers + 1
     end
     cb(TotalPlayers)
