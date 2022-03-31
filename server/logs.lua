@@ -1,4 +1,4 @@
-local QBCore = exports['qbr-core']:GetCoreObject()
+
 
 local Webhooks = {
     ['default'] = '',
@@ -47,7 +47,7 @@ local Colors = { -- https://www.spycolor.com/
     ["lightgreen"] = 65309,
 }
 
-RegisterNetEvent('qbr-log:server:CreateLog', function(name, title, color, message, tagEveryone)        
+RegisterNetEvent('qbr-log:server:CreateLog', function(name, title, color, message, tagEveryone)
     local tag = tagEveryone or false
     local webHook = Webhooks[name] or Webhooks['default']
     local embedData = {

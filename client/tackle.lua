@@ -17,14 +17,14 @@ end)]]
 
 RegisterNetEvent('tackle:client:GetTackled')
 AddEventHandler('tackle:client:GetTackled', function()
-	SetPedToRagdoll(PlayerPedId(), math.random(1000, 6000), math.random(1000, 6000), 0, 0, 0, 0) 
+	SetPedToRagdoll(PlayerPedId(), math.random(1000, 6000), math.random(1000, 6000), 0, 0, 0, 0)
 	TimerEnabled = true
 	Citizen.Wait(1500)
 	TimerEnabled = false
 end)
 
 function Tackle()
-    closestPlayer, distance = QBCore.Functions.GetClosestPlayer()
+    closestPlayer, distance = exports['qbr-core']:GetClosestPlayer()
     local closestPlayerPed = GetPlayerPed(closestPlayer)
     if(distance ~= -1 and distance < 2) then
         TriggerServerEvent("tackle:server:TacklePlayer", GetPlayerServerId(closestPlayer))
@@ -34,7 +34,7 @@ end
 
 function TackleAnim()
     local ped = PlayerPedId()
-    if not QBCore.Functions.GetPlayerData().metadata["ishandcuffed"] and not IsPedRagdoll(ped) then
+    if not exports['qbr-core']:GetPlayerData().metadata["ishandcuffed"] and not IsPedRagdoll(ped) then
         RequestAnimDict("swimming@first_person@diving")
         while not HasAnimDictLoaded("swimming@first_person@diving") do
             Citizen.Wait(1)

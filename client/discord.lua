@@ -19,16 +19,16 @@ Citizen.CreateThread(function()
         -- Here you can add hover text for the "small" icon.
         SetDiscordRichPresenceAssetSmallText('This is a lsmall icon with text')
 
-        QBCore.Functions.TriggerCallback('smallresources:server:GetCurrentPlayers', function(result)
+        exports['qbr-core']:TriggerCallback('smallresources:server:GetCurrentPlayers', function(result)
             SetRichPresence('Players: '..result..'/64')
         end)
 
         -- (26-02-2021) New Native:
 
-        --[[ 
+        --[[
             Here you can add buttons that will display in your Discord Status,
-            First paramater is the button index (0 or 1), second is the title and 
-            last is the url (this has to start with "fivem://connect/" or "https://") 
+            First paramater is the button index (0 or 1), second is the title and
+            last is the url (this has to start with "fivem://connect/" or "https://")
         ]]--
         SetDiscordRichPresenceAction(0, "First Button!", "fivem://connect/localhost:30120")
         SetDiscordRichPresenceAction(1, "Second Button!", "fivem://connect/localhost:30120")

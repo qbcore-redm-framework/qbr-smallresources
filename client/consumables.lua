@@ -1,4 +1,4 @@
-local QBCore = exports['qbr-core']:GetCoreObject()
+
 local isBusy = false
 
 function loadAnimDict(dict, anim)
@@ -30,27 +30,27 @@ end
 RegisterNetEvent("consumables:client:Drink", function(itemName)
     if isBusy then
         return
-    else        
+    else
         isBusy = not isBusy
-        local sleep = 5000   
+        local sleep = 5000
         SetCurrentPedWeapon(PlayerPedId(), GetHashKey("weapon_unarmed"))
         Citizen.Wait(100)
         if not IsPedOnMount(PlayerPedId()) and not IsPedInAnyVehicle(PlayerPedId()) then
-            local object = nil            
+            local object = nil
             doAnim("p_mugcoffee01x", "SKEL_R_FINGER12", 0.0, -0.05, 0.03, 0.0, 180.0, 180.0, 'action', 'mech_inventory@drinking@coffee', sleep)
         end
-        QBCore.Functions.Progressbar("drink_something", "Drinking..", sleep, false, true, {
+        exports['qbr-core']:Progressbar("drink_something", "Drinking..", sleep, false, true, {
             disableMovement = false,
             disableCarMovement = false,
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
             TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + ConsumeablesDrink[itemName])
-        end)            
+            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", exports['qbr-core']:GetPlayerData().metadata["thirst"] + ConsumeablesDrink[itemName])
+        end)
         ClearPedTasks(PlayerPedId())
         AnimDetatch (sleep)
-        isBusy = not isBusy        
+        isBusy = not isBusy
     end
 end)
 
@@ -73,10 +73,10 @@ RegisterNetEvent("consumables:client:Smoke", function(itemName)
             else
                 item_model = "p_cigarette_cs01x"
                 pX, pY, pZ, rX, rY, rZ = 0.0, 0.03, 0.01, 0.0, 180.0, 90.0
-            end            
+            end
             doAnim(item_model, "SKEL_R_FINGER12", pX, pY, pZ, rX, rY, rZ, 'base', 'amb_wander@code_human_smoking_wander@cigar@male_a@base', sleep)
         end
-        QBCore.Functions.Progressbar("smoking", "Smoking..", sleep, false, true, {
+        exports['qbr-core']:Progressbar("smoking", "Smoking..", sleep, false, true, {
             disableMovement = false,
             disableCarMovement = false,
             disableMouse = false,
@@ -84,7 +84,7 @@ RegisterNetEvent("consumables:client:Smoke", function(itemName)
         }, {}, {}, {}, function() -- Done
             TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
             TriggerServerEvent('hud:server:RelieveStress', math.random(20, 40))
-        end)        
+        end)
         ClearPedTasks(PlayerPedId())
         AnimDetatch (sleep)
         isBusy = not isBusy
@@ -103,7 +103,7 @@ RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
         if not IsPedOnMount(PlayerPedId()) and not IsPedInAnyVehicle(PlayerPedId()) then
             doAnim("s_inv_whiskey01x", "SKEL_R_FINGER12", 0.0, -0.05, 0.22, 0.0, 180.0, 180.0, 'base_trans_cheers_putaway', 'mp_mech_inventory@drinking@moonshine@drunk@male_a', sleep)
         end
-        QBCore.Functions.Progressbar("drink_alcohol", "Drinking liquor..", math.random(3000, 6000), false, true, {
+        exports['qbr-core']:Progressbar("drink_alcohol", "Drinking liquor..", math.random(3000, 6000), false, true, {
             disableMovement = false,
             disableCarMovement = false,
             disableMouse = false,
@@ -111,9 +111,9 @@ RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
         }, {}, {}, {}, function() -- Done
             TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
             TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
-            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", QBCore.Functions.GetPlayerData().metadata["thirst"] + ConsumeablesAlcohol[itemName])
-        end, function() 
-            QBCore.Functions.Notify("Cancelled..", "error")
+            TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", exports['qbr-core']:GetPlayerData().metadata["thirst"] + ConsumeablesAlcohol[itemName])
+        end, function()
+            exports['qbr-core']:Notify("Cancelled..", "error")
         end)
         Citizen.Wait(sleep)
         if bottle ~= nil then
@@ -135,21 +135,21 @@ RegisterNetEvent("consumables:client:Eat", function(itemName)
         Citizen.Wait(100)
         if not IsPedOnMount(PlayerPedId()) and not IsPedInAnyVehicle(PlayerPedId()) then
             local dict = loadAnimDict('mech_inventory@eating@multi_bite@wedge_a4-2_b0-75_w8_h9-4_eat_cheese')
-            TaskPlayAnim(PlayerPedId(), dict, 'quick_right_hand', 5.0, 5.0, -1, 1, false, false, false)    
+            TaskPlayAnim(PlayerPedId(), dict, 'quick_right_hand', 5.0, 5.0, -1, 1, false, false, false)
         end
-        QBCore.Functions.Progressbar("eat_something", "Eating..", 5000, false, true, {
+        exports['qbr-core']:Progressbar("eat_something", "Eating..", 5000, false, true, {
             disableMovement = false,
             disableCarMovement = false,
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
             TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
-            TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", QBCore.Functions.GetPlayerData().metadata["hunger"] + ConsumeablesEat[itemName])
+            TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", exports['qbr-core']:GetPlayerData().metadata["hunger"] + ConsumeablesEat[itemName])
             TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
         end)
         ClearPedTasks(PlayerPedId())
         isBusy = not isBusy
-    end   
+    end
 end)
 
 RegisterNetEvent("qb:Dual", function()

@@ -2,9 +2,9 @@ QBCore.Commands.Add("id", "Check Your ID #", {}, false, function(source, args)
     TriggerClientEvent('QBCore:Notify', source,  "ID: "..source)
 end)
 
-QBCore.Functions.CreateCallback('smallresources:server:GetCurrentPlayers', function(source, cb)
+exports['qbr-core']:CreateCallback('smallresources:server:GetCurrentPlayers', function(source, cb)
     local TotalPlayers = 0
-    for k, v in pairs(QBCore.Functions.GetPlayers()) do
+    for k, v in pairs(exports['qbr-core']:GetPlayers()) do
         TotalPlayers = TotalPlayers + 1
     end
     cb(TotalPlayers)
