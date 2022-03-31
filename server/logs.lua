@@ -71,6 +71,6 @@ RegisterNetEvent('qbr-log:server:CreateLog', function(name, title, color, messag
     end
 end)
 
-QBCore.Commands.Add('testwebhook', 'Test Your Discord Webhook For Logs (God Only)', {}, false, function(source, args)
+exports['qbr-core']:AddCommand('testwebhook', 'Test Your Discord Webhook For Logs (God Only)', {}, false, function(source, args)
     TriggerEvent('qbr-log:server:CreateLog', 'testwebhook', 'Test Webhook', 'default', 'Webhook setup successfully')
 end, 'god')

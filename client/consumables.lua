@@ -1,4 +1,4 @@
-
+local sharedItems = exports['qbr-core']:GetItems()
 local isBusy = false
 
 function loadAnimDict(dict, anim)
@@ -45,7 +45,7 @@ RegisterNetEvent("consumables:client:Drink", function(itemName)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
-            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
             TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", exports['qbr-core']:GetPlayerData().metadata["thirst"] + ConsumeablesDrink[itemName])
         end)
         ClearPedTasks(PlayerPedId())
@@ -82,7 +82,7 @@ RegisterNetEvent("consumables:client:Smoke", function(itemName)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
-            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
             TriggerServerEvent('hud:server:RelieveStress', math.random(20, 40))
         end)
         ClearPedTasks(PlayerPedId())
@@ -109,7 +109,7 @@ RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
-            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
             TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
             TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", exports['qbr-core']:GetPlayerData().metadata["thirst"] + ConsumeablesAlcohol[itemName])
         end, function()
@@ -143,7 +143,7 @@ RegisterNetEvent("consumables:client:Eat", function(itemName)
             disableMouse = false,
             disableCombat = true,
         }, {}, {}, {}, function() -- Done
-            TriggerEvent("inventory:client:ItemBox", QBCore.Shared.Items[itemName], "remove")
+            TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
             TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", exports['qbr-core']:GetPlayerData().metadata["hunger"] + ConsumeablesEat[itemName])
             TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
         end)
