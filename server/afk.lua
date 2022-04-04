@@ -7,6 +7,6 @@ end)
 
 exports['qbr-core']:CreateCallback('qbr-afkkick:server:GetPermissions', function(source, cb)
     local src = source
-    local group = exports['qbr-core']:GetPermission(src)
+    local group = exports['qbr-core']:GetPermissions(src)
     cb(group)
 end)
