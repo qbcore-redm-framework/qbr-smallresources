@@ -113,7 +113,7 @@ RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
             TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
             TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", exports['qbr-core']:GetPlayerData().metadata["thirst"] + ConsumeablesAlcohol[itemName])
         end, function()
-            exports['qbr-core']:Notify("Cancelled..", "error")
+            exports['qbr-core']:Notify(9, "Cancelled..", 2000, 0, 'mp_lobby_textures', 'cross')
         end)
         Citizen.Wait(sleep)
         if bottle ~= nil then
