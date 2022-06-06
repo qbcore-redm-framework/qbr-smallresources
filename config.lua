@@ -5,8 +5,10 @@ Config.JointEffectTime = 60
 
 ConsumeablesEat = {
     ["sandwich"] = math.random(35, 54),
-    ["apple"] = math.random(40, 50),
+    ["apple"] = math.random(10, 25),
     ["cannedbeans"] = math.random(40, 50),
+	["bread"] = math.random(20, 40),
+	["chocolate"] = math.random(30, 50),
 }
 
 ConsumeablesDrink = {
