@@ -62,7 +62,7 @@ Config.BlacklistedObjects = {
     [`prop_sec_barier_02a`] = true
 }
 
--- Config.Teleports = {
+Config.Teleports = {
 --     --Template (needs changing to some default stuff)
 --     [1] = {
 --         [1] = {
@@ -84,4 +84,4 @@ Config.BlacklistedObjects = {
 --             drawText = '[E] Leave'
 --         },
 --     },
--- }
+}
