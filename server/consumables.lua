@@ -87,3 +87,21 @@ exports['qbr-core']:CreateUseableItem("dual", function(source, item)
     local Player = exports['qbr-core']:GetPlayer(source)
     TriggerClientEvent("qb:Dual", source)
 end)
+
+-- 
+exports['qbr-core']:CreateUseableItem("small_fireworks", function(source, item)
+    local Player = exports['qbr-core']:GetPlayer(source)
+	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+        TriggerClientEvent("qbr-consumable:client:fireworks", source,'anm_ind','ent_anim_ind_firework',12,15,8)
+    end
+end)
+
+exports['qbr-core']:CreateUseableItem("big_fireworks", function(source, item)
+    local Player = exports['qbr-core']:GetPlayer(source)
+	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+        TriggerClientEvent("qbr-consumable:client:fireworks", source,'scr_ind1','scr_ind1_firework',25,60,15)
+    end
+end)
+
+
+
