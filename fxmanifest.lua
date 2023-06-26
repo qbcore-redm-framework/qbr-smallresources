@@ -5,9 +5,9 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 description 'QBR-SmallResources'
 version '1.0.0'
 
-shared_scripts {
-	'config.lua'
-}
+shared_script 'config.lua'
 
 server_script 'server/*.lua'
 client_script 'client/*.lua'
+
+lua54 'yes'

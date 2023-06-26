@@ -65,10 +65,9 @@ RegisterNetEvent('qbr-log:server:CreateLog', function(name, title, color, messag
         }
     }
     PerformHttpRequest(webHook, function(err, text, headers) end, 'POST', json.encode({ username = 'QB Logs', embeds = embedData}), { ['Content-Type'] = 'application/json' })
-    Citizen.Wait(100)
-    if tag then
-        PerformHttpRequest(webHook, function(err, text, headers) end, 'POST', json.encode({ username = 'QB Logs', content = '@everyone'}), { ['Content-Type'] = 'application/json' })
-    end
+    Wait(100)
+    if not tag then return end
+    PerformHttpRequest(webHook, function(err, text, headers) end, 'POST', json.encode({ username = 'QB Logs', content = '@everyone'}), { ['Content-Type'] = 'application/json' })
 end)
 
 exports['qbr-core']:AddCommand('testwebhook', 'Test Your Discord Webhook For Logs (God Only)', {}, false, function(source, args)
