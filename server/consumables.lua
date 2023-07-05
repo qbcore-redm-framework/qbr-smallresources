@@ -1,66 +1,30 @@
-
--- Drink
-
-exports['qbr-core']:CreateUseableItem("water_bottle", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Drink", source, item.name)
-    end
-end)
-
-exports['qbr-core']:CreateUseableItem("coffee", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Drink", source, item.name)
-    end
-end)
+-- Drinks
+for k in pairs(ConsumeablesDrink) do
+    exports['qbr-core']:CreateUseableItem(k, function(source, item)
+        local Player = exports['qbr-core']:GetPlayer(source)
+        if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+            TriggerClientEvent("consumables:client:Drink", source, item.name)
+        end
+    end)
+end
 
 -- DrinkAlcohol
-
-exports['qbr-core']:CreateUseableItem("vodka", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-    TriggerClientEvent("consumables:client:DrinkAlcohol", source, item.name)
-end)
-
-exports['qbr-core']:CreateUseableItem("beer", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-    TriggerClientEvent("consumables:client:DrinkAlcohol", source, item.name)
-end)
-
-exports['qbr-core']:CreateUseableItem("whiskey", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-    TriggerClientEvent("consumables:client:DrinkAlcohol", source, item.name)
-end)
+for k in pairs(ConsumeablesAlcohol) do
+    exports['qbr-core']:CreateUseableItem(k, function(source, item)
+        local Player = exports['qbr-core']:GetPlayer(source)
+        TriggerClientEvent("consumables:client:DrinkAlcohol", source, item.name)
+    end)
+end
 
 -- EAT
-
-exports['qbr-core']:CreateUseableItem("sandwich", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", source, item.name)
-    end
-end)
-
-exports['qbr-core']:CreateUseableItem("bread", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", source, item.name)
-    end
-end)
-
-exports['qbr-core']:CreateUseableItem("apple", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", source, item.name)
-    end
-end)
-
-exports['qbr-core']:CreateUseableItem("chocolate", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
-        TriggerClientEvent("consumables:client:Eat", source, item.name)
-    end
-end)
+for k in pairs(ConsumeablesEat) do 
+    exports['qbr-core']:CreateUseableItem(k, function(source, item)
+        local Player = exports['qbr-core']:GetPlayer(source)
+        if Player.Functions.RemoveItem(item.name, 1, item.slot) then
+            TriggerClientEvent("consumables:client:Eat", source, item.name)
+        end
+    end)
+end
 
 -- OTHER
 
@@ -76,11 +40,6 @@ exports['qbr-core']:CreateUseableItem("cigar", function(source, item)
 	if Player.Functions.RemoveItem(item.name, 1, item.slot) then
         TriggerClientEvent("consumables:client:Smoke", source, item.name)
     end
-end)
-
-exports['qbr-core']:CreateUseableItem("binoculars", function(source, item)
-    local Player = exports['qbr-core']:GetPlayer(source)
-    TriggerClientEvent("binoculars:Toggle", source)
 end)
 
 exports['qbr-core']:CreateUseableItem("dual", function(source, item)

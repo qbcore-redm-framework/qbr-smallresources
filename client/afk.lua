@@ -1,50 +1,46 @@
 -- AFK Kick Time Limit (in seconds)
-local group = 'user'
-local secondsUntilKick = 1800
+local sid = GetPlayerServerId(PlayerId())
+local IsLoggedIn, group
 
-local prevPos, time = nil, nil
-
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+AddStateBagChangeHandler('isLoggedIn', ('player:%s'):format(sid), function(_, _, value)
+    IsLoggedIn = value
+    if group then return end
     exports['qbr-core']:TriggerCallback('qbr-afkkick:server:GetPermissions', function(UserGroup)
-        group = UserGroup
+        group = next(UserGroup) and UserGroup or 'user'
     end)
 end)
 
-RegisterNetEvent('QBCore:Client:OnPermissionUpdate', function(UserGroup)
-    group = UserGroup
-end)
-
 CreateThread(function()
-    while true do
-        Wait(1000)
-        local playerPed = PlayerPedId()
-        if LocalPlayer.state.isLoggedIn then
-            if group == 'user' then
-                currentPos = GetEntityCoords(playerPed, true)
-                if prevPos ~= nil then
+    local prevPos, time
+    local secondsUntilKick = 1800
+    local timeMinutes = {
+        ['900'] = 'minutes',
+        ['600'] = 'minutes',
+        ['300'] = 'minutes',
+        ['150'] = 'minutes',
+        ['60'] = 'minutes',
+        ['30'] = 'seconds',
+        ['20'] = 'seconds',
+        ['10'] = 'seconds',
+    }
+	while true do
+		Wait(10000)
+        if IsLoggedIn then
+            if group == "user" then
+                local currentPos = GetEntityCoords(PlayerPedId())
+                if prevPos then
                     if currentPos == prevPos then
-                        if time ~= nil then
+                        if time then
                             if time > 0 then
-                                if time == (900) then
+                                local _type = timeMinutes[tostring(time)]
+                                if _type == 'minutes' then
                                     exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. math.ceil(time / 60) .. ' minutes!', 'error', 10000)
-                                elseif time == (600) then
-                                    exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. math.ceil(time / 60) .. ' minutes!', 'error', 10000)
-                                elseif time == (300) then
-                                    exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. math.ceil(time / 60) .. ' minutes!', 'error', 10000)
-                                elseif time == (150) then
-                                    exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. math.ceil(time / 60) .. ' minutes!', 'error', 10000)
-                                elseif time == (60) then
-                                    exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. math.ceil(time / 60) .. ' minute!', 'error', 10000)
-                                elseif time == (30) then
-                                    exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. time .. ' seconds!', 'error', 10000)
-                                elseif time == (20) then
-                                    exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. time .. ' seconds!', 'error', 10000)
-                                elseif time == (10) then
+                                elseif _type == 'seconds' then
                                     exports['qbr-core']:Notify(9, 'You are AFK and will be kicked in ' .. time .. ' seconds!', 'error', 10000)
                                 end
-                                time = time - 1
+                                time -= 10
                             else
-                                TriggerServerEvent('qbr-afkkick:server:KickForAFK')
+                                TriggerServerEvent("qbr-afkkick:server:KickForAFK")
                             end
                         else
                             time = secondsUntilKick
