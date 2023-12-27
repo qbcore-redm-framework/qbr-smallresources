@@ -46,7 +46,7 @@ RegisterNetEvent("consumables:client:Drink", function(itemName)
         disableCombat = true,
     }, {}, {}, {}, function() -- Done
         TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
-        TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", exports['qbr-core']:GetPlayerData().metadata["thirst"] + ConsumeablesDrink[itemName])
+		exports['qbr-hud']:UpdateStatus({thirst = ConsumeablesDrink[itemName]})
     end)
     ClearPedTasks(ped)
     AnimDetatch (sleep)
@@ -78,7 +78,7 @@ RegisterNetEvent("consumables:client:Smoke", function(itemName)
         disableCombat = true,
     }, {}, {}, {}, function() -- Done
         TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
-        TriggerServerEvent('hud:server:RelieveStress', math.random(20, 40))
+		exports['qbr-hud']:UpdateStatus({stress = math.random(-40, -20))
     end)
     ClearPedTasks(ped)
     AnimDetatch (sleep)
@@ -101,7 +101,7 @@ RegisterNetEvent("consumables:client:DrinkAlcohol", function(itemName)
     }, {}, {}, {}, function() -- Done
         TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
         TriggerServerEvent("QBCore:Server:RemoveItem", itemName, 1)
-        TriggerServerEvent("QBCore:Server:SetMetaData", "thirst", exports['qbr-core']:GetPlayerData().metadata["thirst"] + ConsumeablesAlcohol[itemName])
+		exports['qbr-hud']:UpdateStatus({thirst = ConsumeablesAlcohol[itemName]})
     end, function()
         exports['qbr-core']:Notify(9, "Cancelled..", 2000, 0, 'mp_lobby_textures', 'cross')
     end)
@@ -129,8 +129,7 @@ RegisterNetEvent("consumables:client:Eat", function(itemName)
         disableCombat = true,
     }, {}, {}, {}, function() -- Done
         TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
-        TriggerServerEvent("QBCore:Server:SetMetaData", "hunger", exports['qbr-core']:GetPlayerData().metadata["hunger"] + ConsumeablesEat[itemName])
-        TriggerServerEvent('hud:server:RelieveStress', math.random(2, 4))
+		exports['qbr-hud']:UpdateStatus({stress = math.random(-4, -2), hunger = ConsumeablesEat[itemName]})
     end)
     ClearPedTasks(ped)
     isBusy = not isBusy
