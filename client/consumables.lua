@@ -78,7 +78,7 @@ RegisterNetEvent("consumables:client:Smoke", function(itemName)
         disableCombat = true,
     }, {}, {}, {}, function() -- Done
         TriggerEvent("inventory:client:ItemBox", sharedItems[itemName], "remove")
-		exports['qbr-hud']:UpdateStatus({stress = math.random(-40, -20))
+		exports['qbr-hud']:UpdateStatus({stress = math.random(-40, -20)})
     end)
     ClearPedTasks(ped)
     AnimDetatch (sleep)
